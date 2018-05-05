@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,26 +13,46 @@ namespace CompressFile
     {
         public static void Main()
         {
-            // Path to directory of files to compress and decompress.
-            string dirpath = @"D:\Img";
-
-            DirectoryInfo di = new DirectoryInfo(dirpath);
-
-            // Compress the directory's files.
-            foreach (FileInfo fi in di.GetFiles())
+            // Read file.
+            var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
+            if (string.IsNullOrEmpty(executingAssemblyLocation))
             {
-                Compress(fi);
-
+                Console.WriteLine("Assembly location is invalid");
+                Console.ReadLine();
+                return;
             }
 
-            // Decompress all *.gz files in the directory.
-            foreach (FileInfo fi in di.GetFiles("*.gz"))
+            var path = Path.GetDirectoryName(executingAssemblyLocation);
+            if (string.IsNullOrEmpty(path))
             {
-                Decompress(fi);
-
+                Console.WriteLine("Path is invalid");
+                Console.ReadLine();
+                return;
             }
 
+            var szImagePath = Path.Combine(path, "sniper.jpg");
+            // Check file existence.
+            if (!File.Exists(szImagePath))
+            {
+                Console.WriteLine($"{szImagePath} is invalid");
+                Console.ReadLine();
+                return;
+            }
 
+            var bytes = File.ReadAllBytes(szImagePath);
+            // Write file copy.
+            var fileName = $"{Guid.NewGuid().ToString("D")}.gz";
+            var compressedFile = Path.Combine(path, fileName);
+
+            using (var outputFileStream = new FileStream(compressedFile, FileMode.OpenOrCreate))
+            {
+                using (var gZipStream = new GZipStream(outputFileStream,
+                    CompressionMode.Compress, true))
+                    gZipStream.Write(bytes, 0, bytes.Length);
+            }
+            
+            Console.WriteLine("Completed");
+            Console.ReadLine();
         }
 
         public static void Compress(FileInfo fi)
