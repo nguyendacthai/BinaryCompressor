@@ -66,13 +66,13 @@ namespace ConsoleApp
                     using (FileStream outFile =
                                 File.Create(fi.FullName + ".gz"))
                     {
-                        using (GZipStream Compress =
+                        using (GZipStream compress =
                             new GZipStream(outFile,
                             CompressionMode.Compress))
                         {
                             // Copy the source file into 
                             // the compression stream.
-                            inFile.CopyTo(Compress);
+                            inFile.CopyTo(compress);
 
                             Console.WriteLine("Compressed {0} from {1} to {2} bytes.",
                                 fi.Name, fi.Length.ToString(), outFile.Length.ToString());
@@ -96,12 +96,12 @@ namespace ConsoleApp
                 //Create the decompressed file.
                 using (FileStream outFile = File.Create(origName))
                 {
-                    using (GZipStream Decompress = new GZipStream(inFile,
+                    using (GZipStream decompress = new GZipStream(inFile,
                             CompressionMode.Decompress))
                     {
                         // Copy the decompression stream 
                         // into the output file.
-                        Decompress.CopyTo(outFile);
+                        decompress.CopyTo(outFile);
 
                         Console.WriteLine("Decompressed: {0}", fi.Name);
 
