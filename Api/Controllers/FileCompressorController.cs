@@ -6,6 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using Api.ViewModels;
 
@@ -30,18 +32,19 @@ namespace Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
 
             #endregion
+            
+            var fileName = Guid.NewGuid().ToString("D");
 
-            using (FileStream outFile = File.Create(info.Photos.Name))
+            var path = HttpContext.Current.Server.MapPath($"~/{fileName}");
+
+            using (var ms = new MemoryStream(info.Photos.Buffer))
+
+
+            using (var fileStream = new FileStream(path, FileMode.OpenOrCreate))
             {
-                using (GZipStream decompress = new GZipStream(outFile,
-                    CompressionMode.Decompress))
+                using (GZipStream gZipStream = new GZipStream(ms, CompressionMode.Decompress))
                 {
-                    // Copy the decompression stream 
-                    // into the output file.
-                    decompress.CopyTo(outFile);
-
-                    //Console.WriteLine("Decompressed: {0}", info.Photos.Name);
-
+                    gZipStream.CopyTo(fileStream);
                 }
             }
 
