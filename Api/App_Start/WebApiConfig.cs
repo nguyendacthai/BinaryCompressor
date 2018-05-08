@@ -21,7 +21,7 @@ namespace Api
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            config.Formatters.Add(new MultipartFormDataFormatter());
+            config.Formatters.Add(new ApiMultipartFormDataFormatter());
         }
     }
 }
