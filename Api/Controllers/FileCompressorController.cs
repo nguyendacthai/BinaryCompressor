@@ -18,7 +18,7 @@ namespace Api.Controllers
     {
         [Route("decompress")]
         [HttpPost]
-        public HttpResponseMessage DecompressFile([FromBody] FileCompressorViewModel info)
+        public HttpResponseMessage DecompressFile( FileCompressorViewModel info)
         {
             #region parameters validation
 
