@@ -32,20 +32,16 @@ namespace Api.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
 
             #endregion
-            
+
             var fileName = Guid.NewGuid().ToString("D");
 
             var path = HttpContext.Current.Server.MapPath($"~/{fileName}");
 
             using (var ms = new MemoryStream(info.Photos.Buffer))
-
-
             using (var fileStream = new FileStream(path, FileMode.OpenOrCreate))
+            using (var gZipStream = new GZipStream(ms, CompressionMode.Decompress))
             {
-                using (GZipStream gZipStream = new GZipStream(ms, CompressionMode.Decompress))
-                {
-                    gZipStream.CopyTo(fileStream);
-                }
+                gZipStream.CopyTo(fileStream);
             }
 
             return Request.CreateResponse(HttpStatusCode.OK);
